@@ -47,11 +47,11 @@ func (ln *Listener) ListenRedirector(mifs []net.Interface) (*Redirector, error) 
 
 // A RedirectHandler represens a generic redirect handler.
 type RedirectHandler interface {
-	// RediretAdvert handles an inbound SSDP advertisement
+	// RedirectAdvert handles an inbound SSDP advertisement
 	// message.
 	RedirectAdvert(*AdvertRedirector)
 
-	// RediretResponse handles an inbound SSDP response message.
+	// RedirectResponse handles an inbound SSDP response message.
 	RedirectResponse(*ResponseRedirector)
 }
 
@@ -65,7 +65,8 @@ func (rdr *Redirector) Serve(hdlr RedirectHandler) error {
 	for {
 		n, path, err := rdr.readFrom(b)
 		if err != nil {
-			if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
+			var nerr net.Error
+			if errors.As(err, &nerr) && nerr.Temporary() {
 				rdr.logf("read failed: %v", err)
 				continue
 			}

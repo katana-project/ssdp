@@ -26,7 +26,7 @@ type Device struct {
 	mifs    []net.Interface   // multicast network interfaces
 }
 
-// ListenDevices listens on the UDP network Listener.Group and
+// ListenDevice listens on the UDP network Listener.Group and
 // Listener.Port, and returns a device. If mifs is nil, it tries to
 // listen on all available multicast network interfaces.
 func (ln *Listener) ListenDevice(mifs []net.Interface) (*Device, error) {
@@ -57,7 +57,8 @@ func (dev *Device) Serve(hdlr http.Handler) error {
 	for {
 		n, path, err := dev.readFrom(b)
 		if err != nil {
-			if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
+			var nerr net.Error
+			if errors.As(err, &nerr) && nerr.Temporary() {
 				dev.logf("read failed: %v", err)
 				continue
 			}

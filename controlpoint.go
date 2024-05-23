@@ -134,7 +134,7 @@ func (cp *ControlPoint) Interfaces() []net.Interface {
 func (cp *ControlPoint) MSearch(hdr http.Header, mifs []net.Interface, tmo time.Duration) ([]*http.Response, error) {
 	req := newAdvert(msearchMethod, cp.group.String(), hdr)
 	var buf bytes.Buffer
-	if err := marshalAdvert(&buf, req); err != nil {
+	if err := req.Write(&buf); err != nil {
 		return nil, err
 	}
 	mifs, err := interfaces(mifs, cp.unicast)
